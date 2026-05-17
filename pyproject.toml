@@ -1,0 +1,32 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "agentci-privacy-filter-harness"
+version = "0.1.0"
+description = "On-prem privacy filtering harness for agent CI workflows."
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+  "fastapi>=0.115",
+  "pydantic>=2.7",
+  "uvicorn[standard]>=0.30",
+]
+
+[dependency-groups]
+dev = [
+  "httpx>=0.27",
+  "pytest>=8.2",
+  "ruff>=0.5",
+]
+
+[tool.uv]
+package = true
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"

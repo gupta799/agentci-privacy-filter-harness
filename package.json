@@ -1,0 +1,12 @@
+{
+  "name": "agentci-privacy-filter-harness",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "load:autocannon": "node load-tests/autocannon-redact.mjs"
+  },
+  "devDependencies": {
+    "autocannon": "^8.0.0"
+  }
+}
