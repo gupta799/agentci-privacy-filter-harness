@@ -13,16 +13,16 @@ backend exists only for smoke tests when the model is not installed yet.
 
 ## Quick Start
 
+From a checkout of this repo:
+
 ```bash
-cd /Users/jaiydevgupta/Projects/opensource/agentci-privacy-filter-harness
 uv sync --dev
 ```
 
-Install OpenAI Privacy Filter:
+Install the real OpenAI Privacy Filter backend:
 
 ```bash
-git clone https://github.com/openai/privacy-filter /tmp/openai-privacy-filter
-uv pip install -e /tmp/openai-privacy-filter
+uv sync --dev --extra opf
 ```
 
 Run the server:
