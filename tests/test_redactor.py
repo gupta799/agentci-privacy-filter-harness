@@ -2,7 +2,7 @@ from agentci_privacy_filter.redactor import RegexRedactor, extract_labels
 
 
 def test_extract_labels_deduplicates_and_sorts():
-    labels = extract_labels("[SECRET] [PRIVATE_EMAIL] [SECRET]")
+    labels = extract_labels("[SECRET] <PRIVATE_EMAIL> [SECRET]")
 
     assert labels == ["PRIVATE_EMAIL", "SECRET"]
 

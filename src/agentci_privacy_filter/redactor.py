@@ -2,13 +2,11 @@ from __future__ import annotations
 
 import os
 import re
-import shlex
-import subprocess
 import time
 from dataclasses import dataclass
 
 
-PLACEHOLDER_RE = re.compile(r"\[(PRIVATE_[A-Z_]+|ACCOUNT_NUMBER|SECRET)\]")
+PLACEHOLDER_RE = re.compile(r"[\[<]([A-Z0-9_]+)[>\]]")
 
 
 @dataclass(frozen=True)
@@ -24,44 +22,42 @@ class RedactorError(RuntimeError):
 
 
 class OpfRedactor:
-    def __init__(self, command: str = "opf", device: str = "cpu", timeout_seconds: int = 120):
-        self.command = command
+    def __init__(self, device: str = "cpu", output_mode: str = "typed"):
         self.device = device
-        self.timeout_seconds = timeout_seconds
+        self.output_mode = output_mode
+        self._redactor = None
 
     def redact(self, text: str) -> RedactionResult:
         start = time.perf_counter()
-        command = [*shlex.split(self.command), "--device", self.device, text]
-        env = {**os.environ, "NO_COLOR": "1", "TERM": "dumb"}
+        redactor = self._get_redactor()
 
         try:
-            completed = subprocess.run(
-                command,
-                capture_output=True,
-                check=False,
-                env=env,
-                text=True,
-                timeout=self.timeout_seconds,
-            )
-        except FileNotFoundError as exc:
-            raise RedactorError(
-                "Could not find the `opf` CLI. Install OpenAI Privacy Filter first."
-            ) from exc
-        except subprocess.TimeoutExpired as exc:
-            raise RedactorError("OpenAI Privacy Filter timed out.") from exc
+            result = redactor.redact(text)
+        except Exception as exc:
+            raise RedactorError(f"OpenAI Privacy Filter failed: {exc}") from exc
 
         elapsed_ms = (time.perf_counter() - start) * 1000
-        if completed.returncode != 0:
-            stderr = completed.stderr.strip()
-            raise RedactorError(f"OpenAI Privacy Filter failed: {stderr}")
-
-        redacted_text = completed.stdout.strip()
+        labels = sorted({span.label.upper() for span in result.detected_spans})
         return RedactionResult(
-            redacted_text=redacted_text,
-            labels=extract_labels(redacted_text),
+            redacted_text=result.redacted_text,
+            labels=labels,
             elapsed_ms=elapsed_ms,
             backend="opf",
         )
+
+    def _get_redactor(self):
+        if self._redactor is not None:
+            return self._redactor
+
+        try:
+            from opf import OPF
+        except ImportError as exc:
+            raise RedactorError(
+                "OpenAI Privacy Filter is not installed. Run `uv sync --dev --extra opf`."
+            ) from exc
+
+        self._redactor = OPF(device=self.device, output_mode=self.output_mode)
+        return self._redactor
 
 
 class RegexRedactor:
@@ -95,8 +91,7 @@ def build_redactor():
         return RegexRedactor()
     if backend == "opf":
         return OpfRedactor(
-            command=os.getenv("OPF_COMMAND", "opf"),
             device=os.getenv("OPF_DEVICE", "cpu"),
-            timeout_seconds=int(os.getenv("OPF_TIMEOUT_SECONDS", "120")),
+            output_mode=os.getenv("OPF_OUTPUT_MODE", "typed"),
         )
     raise RedactorError(f"Unknown REDACTOR_BACKEND={backend!r}")

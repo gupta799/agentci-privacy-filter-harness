@@ -8,8 +8,9 @@ boundaries. The core idea is simple: before an agent reads logs, tickets, email,
 browser output, or tool traces, route the text through a local privacy filter and
 fail the run when sensitive spans appear.
 
-The real backend is OpenAI Privacy Filter via the `opf` CLI. A small regex
-backend exists only for smoke tests when the model is not installed yet.
+The real backend is OpenAI Privacy Filter via the `opf` Python API, so the
+model stays warm in the server process. A small regex backend exists only for
+smoke tests when the model is not installed yet.
 
 ## Quick Start
 
