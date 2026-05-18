@@ -11,3 +11,4 @@ build/
 .env
 *.log
 .codex-*.png
+mlperf_log_*
