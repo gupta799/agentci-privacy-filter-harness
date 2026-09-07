@@ -1,0 +1,22 @@
+[project]
+name = "shieldstral-finetuning"
+version = "0.1.0"
+description = "Policy-conditioned datasets and LoRA training configuration for Mistral Shieldstral"
+readme = "README.md"
+requires-python = ">=3.11"
+authors = [{ name = "Jaiydev Gupta" }]
+dependencies = ["pyarrow>=18,<24"]
+
+[project.scripts]
+shieldstral-build-data = "shieldstral_finetuning.cli.build_data:main"
+shieldstral-unpack-data = "shieldstral_finetuning.cli.unpack_data:main"
+
+[dependency-groups]
+dev = ["ruff>=0.9,<1"]
+
+[build-system]
+requires = ["hatchling>=1.27,<2"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/shieldstral_finetuning"]

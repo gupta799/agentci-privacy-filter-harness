@@ -1,0 +1,48 @@
+# Adapted from Axolotl's Apache-2.0 Shieldstral example.
+# Changes: combined data, explicit held-out validation, assistant-only loss.
+# See THIRD_PARTY_NOTICES.md for provenance.
+base_model: mistralai/Shieldstral-1.0-3B
+tokenizer_use_mistral_common: true
+
+plugins:
+  - axolotl.integrations.cut_cross_entropy.CutCrossEntropyPlugin
+
+datasets:
+  - path: ./data/combined/train.jsonl
+    type: chat_template
+    roles_to_train: [assistant]
+    train_on_eos: none
+
+# Axolotl calls validation input test_datasets. The final test.jsonl is unused here.
+test_datasets:
+  - path: ./data/combined/validation.jsonl
+    type: chat_template
+    roles_to_train: [assistant]
+    train_on_eos: none
+
+dataset_prepared_path: last_run_prepared
+output_dir: ./outputs/shieldstral-lora
+
+adapter: lora
+sequence_len: 4096
+sample_packing: true
+lora_r: 32
+lora_alpha: 16
+lora_dropout: 0.0
+lora_target_modules: 'model.language_model.layers.[\d]+.(mlp|self_attn).(up|down|gate|q|k|v|o)_proj'
+
+gradient_accumulation_steps: 2
+micro_batch_size: 2
+num_epochs: 1
+optimizer: adamw_torch_fused
+lr_scheduler: cosine
+learning_rate: 0.0001
+
+bf16: auto
+tf32: false
+gradient_checkpointing: true
+logging_steps: 1
+attn_implementation: flash_attention_2
+warmup_ratio: 0.1
+evals_per_epoch: 1
+saves_per_epoch: 1
