@@ -14,7 +14,7 @@ The upstream model is licensed under Apache License 2.0. Model weights are not i
 
 ## Combined dataset
 
-The snapshot is a collection of adapted records retaining separate source licenses. Upstream README, LICENSE, and NOTICE files available with each downloaded source are included in `data/combined/upstream-notices/`. Row metadata preserve source revisions, original identifiers, label metadata, and BIPIA attribution. Changes include message-format conversion, task expansion, BIPIA attack insertion, grouping, deduplication, and validation partitioning.
+The preparation pipeline produces adapted records retaining separate source licenses. Upstream README, LICENSE, and NOTICE files available with each downloaded source are copied to the local `data/combined/upstream-notices/` output. Downloaded and generated datasets are not tracked in the current repository tree. Row metadata preserve source revisions, original identifiers, label metadata, and BIPIA attribution. Changes include message-format conversion, task expansion, BIPIA attack insertion, grouping, deduplication, and validation partitioning.
 
 | Source | Terms recorded by the source | Modification / attribution |
 | --- | --- | --- |
@@ -23,6 +23,6 @@ The snapshot is a collection of adapted records retaining separate source licens
 | BIPIA EmailQA and attack templates | MIT | Original BIPIA LICENSE and NOTICE retained; detector examples generated from clean context plus attack insertion. |
 | BIPIA TableQA and CodeQA | [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/) according to BIPIA's source exceptions | These adapted records retain CC BY-SA 4.0; original source/author URLs preserved where supplied. |
 | NotInject | MIT | All official benchmark rows retained as benign evaluation examples; source card retained. |
-| WildGuardMix | [ODC-BY](https://opendatacommons.org/licenses/by/1-0/) and publisher access terms | Adapter only in this snapshot; source bytes were not downloaded or included. |
+| WildGuardMix | [ODC-BY](https://opendatacommons.org/licenses/by/1-0/) and publisher access terms | Optional adapter; downloading requires an authorized account. |
 
 BIPIA attributes WikiTableQuestions to Panupong Pasupat and Percy Liang and CodeQA data to the Stack Exchange archive. Its original per-record Stack Overflow URLs and author URLs are preserved. Two original CodeQA test contexts have no author URL in the source; the manifest records this omission. No author identity was invented. [BIPIA source license](https://github.com/microsoft/BIPIA/blob/a004b69ec0dd446e0afd461d98cb5e96e120a5d0/LICENSE).

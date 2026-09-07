@@ -15,12 +15,8 @@ wandb/
 data/*
 !data/README.md
 !data/examples/
-!data/combined/
-data/combined/*
-!data/combined/*.jsonl.gz
-!data/combined/manifest.json
-!data/combined/DATASET_CARD.md
-!data/combined/upstream-notices/
+*.jsonl.gz
+*.parquet
 .ruff_cache/
 .pytest_cache/
 dist/

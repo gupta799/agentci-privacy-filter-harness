@@ -7,4 +7,4 @@
 - Keep Python code under `src/shieldstral_finetuning/`: CLI entry points in `cli/`, dataset logic in `datasets/`, upstream adapters in `datasets/sources/`.
 - Put training configuration in `configs/training/`, source documentation in `docs/datasets/`, and tests in `tests/`.
 - Run `uv run ruff check .`, `uv run ruff format --check .`, and `uv run python -m unittest discover -s tests -v` before committing code changes.
-- Preserve dataset provenance, license notices, task-specific labels, and held-out split boundaries. Never commit tokens or uncompressed dataset files.
+- Preserve dataset provenance, license notices, task-specific labels, and held-out split boundaries. Commit the source lock and preparation code; never commit tokens, downloaded datasets, generated training data, or compressed dataset archives. Only the small synthetic format examples belong in Git.

@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 import argparse
-import gzip
 import json
 import os
 import shutil
@@ -16,6 +15,7 @@ from pathlib import Path
 from shieldstral_finetuning.datasets.combine import combine, export
 
 SOURCES = ("aegis", "wildguard", "deepset", "bipia", "notinject")
+DEFAULT_SOURCES = ("aegis", "deepset", "bipia", "notinject")
 
 
 def capture_notices(statuses, cache_dir, stage):
@@ -39,7 +39,7 @@ def capture_notices(statuses, cache_dir, stage):
 
 def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--sources", nargs="+", choices=SOURCES, default=list(SOURCES))
+    parser.add_argument("--sources", nargs="+", choices=SOURCES)
     parser.add_argument("--output", type=Path, default=Path("data/combined"))
     parser.add_argument("--cache-dir", type=Path, default=Path(".cache/datasets"))
     parser.add_argument("--seed", type=int, default=42)
@@ -51,7 +51,12 @@ def main(argv=None):
     )
     parser.add_argument("--overwrite", action="store_true", help="Replace generated output files.")
     parser.add_argument(
-        "--lock-manifest", type=Path, help="Reuse exact source revisions from a prior manifest."
+        "--source-lock",
+        "--lock-manifest",
+        dest="lock_manifest",
+        type=Path,
+        default=Path("configs/data/sources.lock.json"),
+        help="Pin source revisions and hashes using a source lock or previous build manifest.",
     )
     args = parser.parse_args(argv)
     if not 0 <= args.validation_fraction < 1:
@@ -61,16 +66,15 @@ def main(argv=None):
     from shieldstral_finetuning.datasets.sources.bipia import fetch_bipia
     from shieldstral_finetuning.datasets.sources.huggingface import fetch_hf_source
 
-    locked = {}
-    locked_metadata = {}
-    if args.lock_manifest:
-        old = json.loads(args.lock_manifest.read_text())
-        locked_metadata = {s["source"]: s for s in old["sources"]}
-        locked = {name: s.get("revision") for name, s in locked_metadata.items()}
-    requested = list(dict.fromkeys(args.sources))
-    if args.lock_manifest and any(not locked.get(name) for name in requested):
+    old = json.loads(args.lock_manifest.read_text())
+    locked_metadata = {s["source"]: s for s in old["sources"]}
+    locked = {name: s.get("revision") for name, s in locked_metadata.items()}
+    requested = list(dict.fromkeys(args.sources or old.get("default_sources", DEFAULT_SOURCES)))
+    if not requested or any(name not in SOURCES for name in requested):
+        parser.error("The source lock must select at least one supported source.")
+    if any(not locked.get(name) for name in requested):
         parser.error(
-            "Every requested source must have a revision in --lock-manifest; use --sources to select pinned sources."
+            "Every requested source must have a revision in --source-lock; use --sources to select pinned sources."
         )
     records, statuses = [], {}
     token = os.environ.get("HF_TOKEN")
@@ -84,6 +88,8 @@ def main(argv=None):
         if name in locked_metadata:
             previous_files = locked_metadata[name].get("files", [])
             current_files = {f["path"]: f["sha256"] for f in result[1].get("files", [])}
+            if previous_files and {f["path"] for f in previous_files} != set(current_files):
+                raise ValueError(f"{name}: source file list differs from source lock")
             for entry in previous_files:
                 if current_files.get(entry["path"]) != entry["sha256"]:
                     raise ValueError(
@@ -159,15 +165,6 @@ def main(argv=None):
     with tempfile.TemporaryDirectory(prefix=".shieldstral-build-", dir=args.output.parent) as temp:
         stage = Path(temp)
         manifest["files"] = export(buckets, stage)
-        # Reproducible compressed copies can be stored in Git without committing
-        # large uncompressed training files. Plain JSONL stays ready for Axolotl.
-        for filename in manifest["files"]:
-            with (
-                (stage / filename).open("rb") as source,
-                (stage / (filename + ".gz")).open("wb") as target,
-            ):
-                with gzip.GzipFile(filename="", mode="wb", fileobj=target, mtime=0) as compressed:
-                    shutil.copyfileobj(source, compressed)
         capture_notices(statuses, args.cache_dir, stage)
         (stage / "manifest.json").write_text(
             json.dumps(manifest, indent=2, ensure_ascii=False) + "\n"

@@ -9,7 +9,6 @@ dependencies = ["pyarrow>=18,<24"]
 
 [project.scripts]
 shieldstral-build-data = "shieldstral_finetuning.cli.build_data:main"
-shieldstral-unpack-data = "shieldstral_finetuning.cli.unpack_data:main"
 
 [dependency-groups]
 dev = ["ruff>=0.9,<1"]

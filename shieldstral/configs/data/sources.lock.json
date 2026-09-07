@@ -1,0 +1,101 @@
+{
+  "schema_version": 1,
+  "default_sources": [
+    "aegis",
+    "deepset",
+    "bipia",
+    "notinject"
+  ],
+  "sources": [
+    {
+      "source": "aegis",
+      "repo_id": "nvidia/Aegis-AI-Content-Safety-Dataset-2.0",
+      "revision": "d86bb8bedff51d25ac834ab7838f1cc61acb7a2c",
+      "files": [
+        {
+          "path": "train.json",
+          "source_split": "train",
+          "rows": 25007,
+          "sha256": "154fba82c71d9fa73abd2ca5588a198e693ddc816c83444df180a22f613e02f6"
+        },
+        {
+          "path": "refusals_train.json",
+          "source_split": "train",
+          "rows": 5000,
+          "sha256": "ff948d3696c9da94cf2523f5d4ae7f16cad7b3c0fd3cb46a331dad0ed717fbe2"
+        },
+        {
+          "path": "validation.json",
+          "source_split": "validation",
+          "rows": 1245,
+          "sha256": "a97200e226ad4f6ba6a639982f817f675909bc74513859df3e8fc9a92951dfcd"
+        },
+        {
+          "path": "refusals_validation.json",
+          "source_split": "validation",
+          "rows": 200,
+          "sha256": "aba81546da0108bc931ae7fb7662b687b42b0bb3e734cde34fbddfbe33cadfcf"
+        },
+        {
+          "path": "test.json",
+          "source_split": "test",
+          "rows": 1964,
+          "sha256": "b0a6d602260524866053cb34105194f074f2c2906e3691b68d43b9e6e9318f35"
+        }
+      ]
+    },
+    {
+      "source": "wildguard",
+      "repo_id": "allenai/wildguardmix",
+      "revision": "d29c47f41c8b51348b5c8e8c81c039b3132b66d1"
+    },
+    {
+      "source": "deepset",
+      "repo_id": "deepset/prompt-injections",
+      "revision": "4f61ecb038e9c3fb77e21034b22511b523772cdd",
+      "files": [
+        {
+          "path": "data/train-00000-of-00001-9564e8b05b4757ab.parquet",
+          "source_split": "train",
+          "rows": 546,
+          "sha256": "2e10bc7ab30f542c97e4e83e2a5683000b5057d25ec10908784c631d44124c04"
+        },
+        {
+          "path": "data/test-00000-of-00001-701d16158af87368.parquet",
+          "source_split": "test",
+          "rows": 116,
+          "sha256": "39ac797cabc157eeed58435a08593b2952bb6cb16fc394a2d383f447cc7b246e"
+        }
+      ]
+    },
+    {
+      "source": "bipia",
+      "revision": "a004b69ec0dd446e0afd461d98cb5e96e120a5d0"
+    },
+    {
+      "source": "notinject",
+      "repo_id": "leolee99/NotInject",
+      "revision": "847ae76cf8fea5ed325429e569ae8cfef022d2e0",
+      "files": [
+        {
+          "path": "data/NotInject_one-00000-of-00001.parquet",
+          "source_split": "test",
+          "rows": 113,
+          "sha256": "5b1d3a8ec341205305efd8c6d2cabeb5ba0f594dd8726b08ee7fde1a46ddc6ec"
+        },
+        {
+          "path": "data/NotInject_two-00000-of-00001.parquet",
+          "source_split": "test",
+          "rows": 113,
+          "sha256": "a5a8c1b3b851b0b5acc3b6caf8bfee26d7da631b2967dd31ca90358df8883feb"
+        },
+        {
+          "path": "data/NotInject_three-00000-of-00001.parquet",
+          "source_split": "test",
+          "rows": 113,
+          "sha256": "d5c685b123570c092a0f374ba6bdf324b2026d905a2751a243eb2bb360d411a8"
+        }
+      ]
+    }
+  ]
+}
