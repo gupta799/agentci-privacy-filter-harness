@@ -67,6 +67,9 @@ hashes updated deliberately. BIPIA also verifies its pinned file hashes in code.
 
 ## Train
 
+See the [first GPU run guide](docs/training/run.md) for environment setup,
+preprocessing checks, the ten-step smoke run, and the full run.
+
 Install Axolotl separately in a compatible CUDA environment using its
 [installation guide](https://docs.axolotl.ai/docs/installation.html) and
 [Shieldstral requirements](https://docs.axolotl.ai/docs/models/shieldstral.html).

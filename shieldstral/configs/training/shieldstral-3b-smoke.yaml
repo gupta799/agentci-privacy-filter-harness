@@ -1,0 +1,47 @@
+# Adapted from Axolotl's Apache-2.0 Shieldstral example.
+# Changes: ten optimizer steps on local training data, assistant-only loss.
+# See THIRD_PARTY_NOTICES.md for provenance.
+base_model: mistralai/Shieldstral-1.0-3B
+tokenizer_use_mistral_common: true
+
+plugins:
+  - axolotl.integrations.cut_cross_entropy.CutCrossEntropyPlugin
+
+datasets:
+  - path: ./data/combined/train.jsonl
+    type: chat_template
+    roles_to_train: [assistant]
+    train_on_eos: none
+
+# Infrastructure check only; evaluation uses the full-run configuration.
+val_set_size: 0.0
+eval_strategy: "no"
+
+dataset_prepared_path: last_run_prepared
+output_dir: ./outputs/shieldstral-smoke
+
+adapter: lora
+sequence_len: 4096
+sample_packing: true
+lora_r: 32
+lora_alpha: 16
+lora_dropout: 0.0
+lora_target_modules: 'model.language_model.layers.[\d]+.(mlp|self_attn).(up|down|gate|q|k|v|o)_proj'
+
+gradient_accumulation_steps: 1
+micro_batch_size: 1
+num_epochs: 1
+max_steps: 10
+seed: 42
+optimizer: adamw_torch_fused
+lr_scheduler: cosine
+learning_rate: 0.0001
+
+bf16: auto
+tf32: false
+gradient_checkpointing: true
+logging_steps: 1
+attn_implementation: flash_attention_2
+warmup_ratio: 0.1
+save_strategy: steps
+save_steps: 10
